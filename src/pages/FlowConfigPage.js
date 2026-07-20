@@ -1,5 +1,3 @@
-// Admin: list approval flows and edit an EXISTING flow's steps/config. Update-only — `code` and
-// `domain` are code contracts (read-only); creating/deleting flows is intentionally not offered.
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';

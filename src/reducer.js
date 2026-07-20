@@ -12,7 +12,6 @@ import {
   CLEAR, ERROR, REQUEST, SUCCESS,
 } from './utils/action-type';
 
-// graphene maps Django JSONField -> a JSON string; parse it (tolerant of already-parsed objects).
 const pj = (v) => {
   if (v == null || typeof v !== 'string') return v;
   try { return JSON.parse(v); } catch (e) { return v; }

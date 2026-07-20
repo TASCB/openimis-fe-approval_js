@@ -31,9 +31,7 @@ const DEFAULT_CONFIG = {
     { path: `${ROUTE_REQUEST}/:approval_request_id?`, component: ApprovalDetailPage },
     { path: ROUTE_FLOWS, component: FlowConfigPage },
   ],
-  // Menu ENTRIES are registered under the module's own `<module>.MainMenu` key; the top-level
-  // "Approvals" menu + which of these appear (and their order) is driven by the DB `fe-core`
-  // ModuleConfiguration `menus` list (submenus reference these ids). Same pattern as communications.
+  
   'approval.MainMenu': [
     {
       text: <FormattedMessage module="approval" id="menu.approvals" />,

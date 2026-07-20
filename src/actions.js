@@ -70,7 +70,6 @@ export const cancelRequest = (requestUuid, { reason } = {}, label) => runMutatio
     ${reason ? `reason: "${formatGQLString(reason)}"` : ''}
 `, label);
 
-// Admin: edit an existing flow's steps/config (update-only; code/domain are read-only server-side).
 export const updateApprovalFlow = (flowUuid, config, isActive, label) => runMutation('updateApprovalFlow', `
     id: "${flowUuid}"
     config: "${formatGQLString(JSON.stringify(config))}"

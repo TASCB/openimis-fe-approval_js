@@ -5,8 +5,6 @@ import { withTheme, withStyles } from '@material-ui/core/styles';
 import { defaultFilterStyles } from '../utils/styles';
 import { ApprovalStatusPicker } from '../pickers/ConstantPickers';
 
-// The approvalRequest connection filters on `status` (exact/in); object_id is exact-only (a UUID),
-// so a status dropdown is the useful filter. Flow filtering is done by the My/All tab split.
 function ApprovalRequestFilter({ classes, filters, onChangeFilters }) {
   const filterValue = (k) => filters?.[k]?.value;
   return (
