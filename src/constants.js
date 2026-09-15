@@ -28,6 +28,11 @@ export const STEP_STATUS = {
   RETURNED: 'RETURNED',
 };
 
+// Status badge follows the openIMIS convention: one neutral grey, not a per-status colour.
+// The per-status map below is retained for places where colour carries information a
+// label does not (calendars, progress trails).
+export const STATUS_CHIP_COLOR = '#9e9e9e';
+
 export const STATUS_COLOR = {
   PENDING: '#1976d2',
   APPROVED: '#2e7d32',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Chip } from '@material-ui/core';
 import { useModulesManager, useTranslations } from '@openimis/fe-core';
-import { MODULE_NAME, STATUS_COLOR } from '../constants';
+import { MODULE_NAME, STATUS_CHIP_COLOR } from '../constants';
 
 export default function ApprovalStatusChip({ status }) {
   const modulesManager = useModulesManager();
@@ -11,7 +11,7 @@ export default function ApprovalStatusChip({ status }) {
     <Chip
       size="small"
       label={formatMessage(`status.${status}`)}
-      style={{ backgroundColor: STATUS_COLOR[status] || '#9e9e9e', color: '#fff' }}
+      style={{ backgroundColor: STATUS_CHIP_COLOR, color: '#fff' }}
     />
   );
 }
