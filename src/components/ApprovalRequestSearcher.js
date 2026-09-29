@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { IconButton, Tooltip } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { useIntl } from 'react-intl';
 import {
@@ -13,6 +14,17 @@ import {
 } from '../constants';
 import ApprovalRequestFilter from './ApprovalRequestFilter';
 import ApprovalStatusChip from './ApprovalStatusChip';
+
+// Equal-width searcher columns.
+const useSearcherTable = makeStyles(() => ({
+  root: {
+    '& table': { tableLayout: 'fixed' },
+    '& table th': { whiteSpace: 'nowrap' },
+    '& table th:last-child, & table td:last-child': {
+      width: 56, paddingLeft: 0, paddingRight: 0, textAlign: 'center',
+    },
+  },
+}));
 
 function ApprovalRequestSearcher({
   mine, fetchApprovalRequests, journalize,
@@ -70,7 +82,9 @@ function ApprovalRequestSearcher({
     <ApprovalRequestFilter filters={filters} onChangeFilters={onChangeFilters} />
   );
 
+  const tableClasses = useSearcherTable();
   return (
+    <div className={tableClasses.root}>
     <Searcher
       module="approval"
       FilterPane={filterPane}
@@ -89,6 +103,7 @@ function ApprovalRequestSearcher({
       rowIdentifier={(r) => r.uuid || r.id}
       onDoubleClick={open}
     />
+    </div>
   );
 }
 

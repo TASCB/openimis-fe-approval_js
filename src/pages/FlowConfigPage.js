@@ -17,6 +17,17 @@ import { fetchApprovalFlows, updateApprovalFlow } from '../actions';
 const useStyles = makeStyles((theme) => ({
   page: theme.page,
   paper: theme.paper.paper,
+  // Detached page header, the same card the detail pages use.
+  header: {
+    ...theme.paper.header,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: theme.spacing(1),
+    padding: theme.spacing(1.5, 2),
+  },
+  count: { fontSize: 13 },
   tableTitle: theme.table.title,
   stepRow: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 },
   ro: { color: theme.palette.text.secondary, fontSize: 13, marginBottom: theme.spacing(1) },
@@ -101,7 +112,7 @@ export default function FlowConfigPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const modulesManager = useModulesManager();
-  const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const fm = (id) => formatMessage(id);
 
   const flows = useSelector((s) => s.approval?.flows || []);
@@ -129,8 +140,14 @@ export default function FlowConfigPage() {
     <div className={classes.page}>
       <Helmet title={fm('flows.title')} />
       <Paper className={classes.paper}>
+        <div className={classes.header}>
+          <Typography variant="h6">{fm('flows.title')}</Typography>
+          <span className={classes.count}>{formatMessageWithValues('flows.count', { count: flows.length })}</span>
+        </div>
+      </Paper>
+      <Paper className={classes.paper}>
         <Grid container className={classes.tableTitle}>
-          <Typography variant="subtitle1">{fm('flows.title')}</Typography>
+          <Typography variant="subtitle1">{fm('flows.tableTitle')}</Typography>
         </Grid>
         <Table size="small">
           <TableHead>

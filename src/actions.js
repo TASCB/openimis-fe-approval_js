@@ -5,11 +5,11 @@ import { ACTION_TYPE } from './reducer';
 
 const REQUEST_PROJECTION = () => [
   'id', 'uuid', 'status', 'currentStepOrder', 'requestedAt', 'completedAt', 'summary', 'entityModel',
-  'objectId', 'flow { id code name domain }', 'requestedBy { id username }',
+  'objectId', 'flow { id code name domain }', 'requestedBy { id username otherNames lastName }',
 ];
 
-const STEP_PROJECTION = 'steps { id uuid order code label status requiredRight taskId '
-  + 'decisions { id uuid decision comment signature decidedAt approver { id username } } }';
+const STEP_PROJECTION = 'steps { id uuid order code label status requiredRight taskId dateCreated '
+  + 'decisions { id uuid decision comment signature decidedAt approver { id username otherNames lastName } } }';
 
 const REQUEST_FULL_PROJECTION = () => [
   ...REQUEST_PROJECTION(),
