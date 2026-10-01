@@ -129,11 +129,6 @@ export default function ApprovalDetailPage({ match }) {
         tab={tab}
         onTab={setTab}
         onBack={back}
-        canDecide={canDecide}
-        canReturn
-        canCancel={canCancel}
-        onAction={act}
-        submitting={submitting}
       />
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
@@ -186,6 +181,11 @@ export default function ApprovalDetailPage({ match }) {
                   commentError={commentError}
                   signature={signature}
                   onSignature={setSignature}
+                  canDecide={canDecide}
+                  canReturn
+                  canCancel={canCancel}
+                  onAction={act}
+                  submitting={submitting}
                 />
               )}
             </>

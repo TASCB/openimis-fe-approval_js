@@ -42,10 +42,38 @@ export function fetchApprovalFlows(params = ['first: 100']) {
 // --- actions (mutations) ---------------------------------------------------
 const MUTATION_TYPES = ['APPROVAL_MUTATION_REQ', 'APPROVAL_MUTATION_RESP', 'APPROVAL_MUTATION_ERR'];
 
+const MUTATION_LOG_QUERY = (clientMutationId) => `query { mutationLogs(clientMutationId: "${clientMutationId}") `
+  + '{ edges { node { status error } } } }';
+const MUTATION_RECEIVED = 0;
+const MUTATION_POLL_ATTEMPTS = 40;
+
+const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
+
+async function waitForMutationLog(dispatch, clientMutationId) {
+  for (let attempt = 0; attempt < MUTATION_POLL_ATTEMPTS; attempt += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    const response = await dispatch(graphql(MUTATION_LOG_QUERY(clientMutationId), 'APPROVAL_MUTATION_LOG'));
+    const log = response?.payload?.data?.mutationLogs?.edges?.[0]?.node;
+    if (response?.error || (log && log.status !== MUTATION_RECEIVED)) return log || null;
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(Math.min(250 * (attempt + 1), 2000));
+  }
+  return null;
+}
+
 function runMutation(name, inputStr, clientMutationLabel) {
   const mutation = formatMutation(name, inputStr, clientMutationLabel);
-  return graphql(mutation.payload, MUTATION_TYPES,
-    { clientMutationId: mutation.clientMutationId, clientMutationLabel });
+  const meta = { clientMutationId: mutation.clientMutationId, clientMutationLabel };
+  return async (dispatch) => {
+    dispatch({ type: MUTATION_TYPES[0], meta });
+    const sent = await dispatch(graphql(mutation.payload, 'APPROVAL_MUTATION_SEND', meta));
+    if (sent?.error) {
+      dispatch({ type: MUTATION_TYPES[2], payload: sent.payload, meta });
+      return;
+    }
+    const log = await waitForMutationLog(dispatch, meta.clientMutationId);
+    dispatch({ type: MUTATION_TYPES[1], payload: log, meta });
+  };
 }
 
 const step = (requestUuid, stepUuid, comment, signature) => `

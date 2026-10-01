@@ -2,7 +2,6 @@
 import {
   dispatchMutationErr,
   dispatchMutationReq,
-  dispatchMutationResp,
   formatGraphQLError,
   formatServerError,
   pageInfo,
@@ -109,7 +108,11 @@ function reducer(state = STORE_STATE, action) {
     case ERROR(ACTION_TYPE.MUTATION):
       return dispatchMutationErr(state, action);
     case SUCCESS(ACTION_TYPE.MUTATION):
-      return dispatchMutationResp(state, action.meta.clientMutationId, action);
+      return {
+        ...state,
+        submittingMutation: false,
+        mutation: { ...state.mutation, status: action.payload?.status, error: action.payload?.error },
+      };
     case CLEAR(ACTION_TYPE.MUTATION):
       return { ...state, mutation: {} };
     default:

@@ -1,15 +1,12 @@
 import React from 'react';
 import {
-  Button, Divider, IconButton, Paper, Tab, Tooltip, Typography,
+  Divider, IconButton, Paper, Tab, Tooltip, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Check from '@material-ui/icons/Check';
 import ApprovalStatusChip from '../ApprovalStatusChip';
 import { useAP } from './common';
 
-// Same building blocks as fe-core's <Form> header (paper / paper.header / paper.action),
-// plus the request's chips, decision actions and the tab row.
 const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: 0, marginBottom: theme.spacing(2) },
   paperHeader: {
@@ -20,10 +17,6 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     gap: theme.spacing(1),
     paddingRight: theme.spacing(1),
-  },
-  paperHeaderAction: theme.paper.action,
-  actions: {
-    display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end', marginLeft: 'auto',
   },
   titleRow: {
     display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: theme.spacing(1),
@@ -41,36 +34,10 @@ const useStyles = makeStyles((theme) => ({
 export const TABS = ['overview', 'history'];
 
 export default function DetailHeader({
-  request, step, stepTotal, tab, onTab, onBack, canDecide, canReturn, canCancel, onAction, submitting,
+  request, step, stepTotal, tab, onTab, onBack,
 }) {
   const classes = useStyles();
   const { formatMessage, formatMessageWithValues } = useAP();
-
-  const actions = [];
-  if (canCancel) {
-    actions.push(
-      <Button color="primary" disabled={submitting} onClick={() => onAction('cancel')}>
-        {formatMessage('action.cancel')}
-      </Button>,
-    );
-  }
-  if (canDecide && canReturn) {
-    actions.push(
-      <Button color="primary" disabled={submitting} onClick={() => onAction('return')}>
-        {formatMessage('action.return')}
-      </Button>,
-    );
-  }
-  if (canDecide) {
-    actions.push(
-      <Button color="primary" disabled={submitting} onClick={() => onAction('reject')}>
-        {formatMessage('action.reject')}
-      </Button>,
-      <Button variant="contained" color="primary" startIcon={<Check />} disabled={submitting} onClick={() => onAction('approve')}>
-        {formatMessage('action.approve')}
-      </Button>,
-    );
-  }
 
   return (
     <Paper className={classes.paper}>
@@ -81,12 +48,6 @@ export default function DetailHeader({
           </Tooltip>
           <Typography variant="h6">{request.flow?.name || request.flow?.code}</Typography>
           <ApprovalStatusChip status={request.status} />
-        </div>
-        <div className={classes.actions}>
-          {actions.map((a, idx) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <span key={`approval-action-${idx}`} className={classes.paperHeaderAction}>{a}</span>
-          ))}
         </div>
       </div>
       <Divider />

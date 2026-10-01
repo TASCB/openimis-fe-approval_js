@@ -1,16 +1,22 @@
 import React from 'react';
-import { Grid, TextField, Typography } from '@material-ui/core';
+import {
+  Button, Grid, TextField, Typography,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Check from '@material-ui/icons/Check';
 import { DetailCard, useAP } from './common';
 
 const useStyles = makeStyles((theme) => ({
   hint: { fontSize: 13, opacity: 0.8, marginBottom: theme.spacing(1.5) },
+  foot: {
+    display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: theme.spacing(1), marginTop: theme.spacing(1),
+  },
 }));
 
-// The comment goes with whichever action the reviewer picks in the header; the signature
-// is recorded only with an approval.
+// The signature is recorded only with an approval.
 export default function DecisionCard({
   comment, onComment, commentError, signature, onSignature,
+  canDecide, canReturn, canCancel, onAction, submitting,
 }) {
   const classes = useStyles();
   const { formatMessage } = useAP();
@@ -44,6 +50,34 @@ export default function DecisionCard({
           />
         </Grid>
       </Grid>
+      <div className={classes.foot}>
+        {canCancel && (
+          <Button color="primary" disabled={submitting} onClick={() => onAction('cancel')}>
+            {formatMessage('action.cancel')}
+          </Button>
+        )}
+        {canDecide && canReturn && (
+          <Button color="primary" disabled={submitting} onClick={() => onAction('return')}>
+            {formatMessage('action.return')}
+          </Button>
+        )}
+        {canDecide && (
+          <>
+            <Button color="primary" disabled={submitting} onClick={() => onAction('reject')}>
+              {formatMessage('action.reject')}
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Check />}
+              disabled={submitting}
+              onClick={() => onAction('approve')}
+            >
+              {formatMessage('action.approve')}
+            </Button>
+          </>
+        )}
+      </div>
     </DetailCard>
   );
 }
