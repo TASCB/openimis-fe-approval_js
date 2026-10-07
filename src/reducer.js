@@ -15,7 +15,9 @@ const pj = (v) => {
   if (v == null || typeof v !== 'string') return v;
   try { return JSON.parse(v); } catch (e) { return v; }
 };
-const normRequest = (r) => (r ? { ...r, summary: pj(r.summary) } : r);
+const normRequest = (r) => (r ? {
+  ...r, summary: pj(r.summary), flow: r.flow ? { ...r.flow, config: pj(r.flow.config) } : r.flow,
+} : r);
 const normFlow = (f) => (f ? { ...f, config: pj(f.config) } : f);
 
 export const ACTION_TYPE = {

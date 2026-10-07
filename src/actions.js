@@ -5,7 +5,7 @@ import { ACTION_TYPE } from './reducer';
 
 const REQUEST_PROJECTION = () => [
   'id', 'uuid', 'status', 'currentStepOrder', 'requestedAt', 'completedAt', 'summary', 'entityModel',
-  'objectId', 'flow { id code name domain }', 'requestedBy { id username otherNames lastName }',
+  'objectId', 'flow { id code name domain config }', 'requestedBy { id username otherNames lastName }',
 ];
 
 const STEP_PROJECTION = 'steps { id uuid order code label status requiredRight taskId dateCreated '

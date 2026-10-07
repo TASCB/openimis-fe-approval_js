@@ -18,9 +18,11 @@ import DetailHeader from '../components/detail/DetailHeader';
 import ApprovalChainCard from '../components/detail/ApprovalChainCard';
 import DecisionCard from '../components/detail/DecisionCard';
 import HistoryCard from '../components/detail/HistoryCard';
+import ChangeCard from '../components/detail/ChangeCard';
+import AboutCard from '../components/detail/AboutCard';
 import { RequesterCard, TechnicalCard } from '../components/detail/SideCards';
 import {
-  DetailCard, InfoField, humanise, personName, useAP,
+  DetailCard, InfoField, humanise, useAP,
 } from '../components/detail/common';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
   openRecord: { textTransform: 'none' },
 }));
 
+// Summary keys ChangeCard / AboutCard show; the rest are listed as plain fields.
+const CARD_KEYS = ['title', 'changes', 'details', 'reason', 'effect'];
+
 // Domains whose record has a detail page, so the reviewer can open what they are approving.
 const RECORD_ROUTES = {
   'access_request.accessrequest': 'access_request.route.request',
@@ -42,10 +47,20 @@ const plainId = (id) => {
   try { return decodeId(id); } catch (e) { return id; }
 };
 
+// Summary values as text a reviewer can read, never raw JSON: lists one item per line,
+// {label, before, after} rows as "Label: before → after", other objects as "Key: value".
 const summaryValue = (v) => {
   if (v === null || v === undefined || v === '') return null;
-  if (typeof v === 'boolean') return v ? '✓' : '✗';
-  if (typeof v === 'object') return JSON.stringify(v);
+  if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+  if (Array.isArray(v)) return v.map(summaryValue).filter(Boolean).join('\n') || null;
+  if (typeof v === 'object') {
+    if ('label' in v && ('before' in v || 'after' in v)) {
+      return `${v.label}: ${summaryValue(v.before) ?? '—'} → ${summaryValue(v.after) ?? '—'}`;
+    }
+    return Object.entries(v)
+      .map(([k, x]) => (summaryValue(x) === null ? null : `${humanise(k)}: ${summaryValue(x)}`))
+      .filter(Boolean).join('\n') || null;
+  }
   return String(v);
 };
 
@@ -53,7 +68,7 @@ export default function ApprovalDetailPage({ match }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { modulesManager, formatMessage, formatDateTimeFromISO } = useAP();
+  const { modulesManager, formatMessage } = useAP();
   const uuid = match?.params?.approval_request_id;
 
   const request = useSelector((s) => s.approval?.request);
@@ -67,7 +82,6 @@ export default function ApprovalDetailPage({ match }) {
   const [tab, setTab] = useState('overview');
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState(null);
-  const [signature, setSignature] = useState('');
   const prevSubmitting = useRef(false);
 
   useEffect(() => { if (uuid) dispatch(fetchApprovalRequest(uuid)); }, [uuid, dispatch]);
@@ -75,7 +89,6 @@ export default function ApprovalDetailPage({ match }) {
     if (prevSubmitting.current && !submitting) {
       dispatch(journalize(mutation));
       setComment('');
-      setSignature('');
       if (uuid) dispatch(fetchApprovalRequest(uuid));
     }
     prevSubmitting.current = submitting;
@@ -97,8 +110,10 @@ export default function ApprovalDetailPage({ match }) {
     ? steps.find((s) => s.order === request.currentStepOrder && s.status === STEP_STATUS.PENDING) : null;
   const canDecide = !!currentStep
     && (rights.includes(Number(currentStep.requiredRight)) || rights.includes(RIGHT_OVERRIDE));
+  const isRequester = !!userId && !!request.requestedBy?.id && plainId(request.requestedBy.id) === String(userId);
   const canCancel = isPending
-    && (rights.includes(RIGHT_CANCEL) || rights.includes(RIGHT_OVERRIDE) || (!!userId && !!request.requestedBy?.id && plainId(request.requestedBy.id) === String(userId)));
+    && (rights.includes(RIGHT_CANCEL) || rights.includes(RIGHT_OVERRIDE) || isRequester);
+  const approveBlocked = isRequester && !!request.flow?.config?.enforce_requester_not_approver;
 
   const act = (action) => {
     const note = comment.trim();
@@ -108,7 +123,7 @@ export default function ApprovalDetailPage({ match }) {
       return;
     }
     const label = formatMessage(`mutation.${action}`);
-    if (action === 'approve') dispatch(approveStep(request.uuid, currentStep.uuid, { comment: note, signature: signature.trim() }, label));
+    if (action === 'approve') dispatch(approveStep(request.uuid, currentStep.uuid, { comment: note }, label));
     else if (action === 'reject') dispatch(rejectStep(request.uuid, currentStep.uuid, { comment: note }, label));
     else if (action === 'return') dispatch(returnStep(request.uuid, currentStep.uuid, { comment: note }, label));
     else if (action === 'cancel') dispatch(cancelRequest(request.uuid, { reason: note }, label));
@@ -117,7 +132,10 @@ export default function ApprovalDetailPage({ match }) {
   const recordRef = RECORD_ROUTES[request.entityModel];
   const openRecord = recordRef && request.objectId
     ? () => history.push(`/${modulesManager.getRef(recordRef)}/${request.objectId}`) : null;
-  const summary = Object.entries(request.summary || {});
+  const hasChanges = Array.isArray(request.summary?.changes);
+  const hasDetails = !hasChanges && Array.isArray(request.summary?.details);
+  const summary = Object.entries(request.summary || {})
+    .filter(([k]) => !((hasChanges || hasDetails) && CARD_KEYS.includes(k)));
 
   return (
     <div className={classes.page}>
@@ -134,6 +152,8 @@ export default function ApprovalDetailPage({ match }) {
         <Grid item xs={12} md={8}>
           {tab === 'overview' && (
             <>
+              {hasChanges && <ChangeCard summary={request.summary} />}
+              {hasDetails && <AboutCard summary={request.summary} />}
               <DetailCard
                 title={formatMessage('detail.details')}
                 action={openRecord && (
@@ -145,15 +165,7 @@ export default function ApprovalDetailPage({ match }) {
                 <Typography className={classes.section}>{formatMessage('detail.section.request')}</Typography>
                 <Grid container spacing={2}>
                   <InfoField label={formatMessage('field.flow')} value={request.flow?.name} />
-                  <InfoField label={formatMessage('field.entity')} value={request.entityModel} mono />
                   <InfoField label={formatMessage('field.status')} value={formatMessage(`status.${request.status}`)} />
-                  <InfoField label={formatMessage('field.requestedBy')} value={personName(request.requestedBy)} />
-                  <InfoField label={formatMessage('field.requestedAt')} value={request.requestedAt && formatDateTimeFromISO(request.requestedAt)} />
-                  <InfoField
-                    label={formatMessage('field.step')}
-                    value={currentStep ? `${currentStep.order} / ${steps.length} · ${currentStep.label || currentStep.code}` : null}
-                    missing={formatMessage('detail.noCurrentStep')}
-                  />
                 </Grid>
                 {summary.length > 0 && (
                   <>
@@ -179,11 +191,10 @@ export default function ApprovalDetailPage({ match }) {
                   comment={comment}
                   onComment={(v) => { setComment(v); setCommentError(null); }}
                   commentError={commentError}
-                  signature={signature}
-                  onSignature={setSignature}
                   canDecide={canDecide}
                   canReturn
                   canCancel={canCancel}
+                  approveBlocked={approveBlocked}
                   onAction={act}
                   submitting={submitting}
                 />

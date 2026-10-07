@@ -56,7 +56,7 @@ export function DetailCard({ title, action = null, children }) {
 
 const useFieldStyles = makeStyles(() => ({
   label: { fontSize: 12, opacity: 0.75, marginBottom: 2 },
-  value: { fontSize: 14, fontWeight: 500, wordBreak: 'break-word' },
+  value: { fontSize: 14, fontWeight: 500, wordBreak: 'break-word', whiteSpace: 'pre-line' },
   missing: { fontSize: 14, opacity: 0.7 },
   mono: { fontFamily: 'monospace', fontSize: 13 },
 }));

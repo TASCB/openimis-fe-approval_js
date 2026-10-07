@@ -107,5 +107,18 @@
   "approval.detail.tech.created": "Created",
   "approval.detail.tech.completed": "Completed",
   "approval.flows.count": "{count} flow(s)",
-  "approval.flows.tableTitle": "Configured flows"
+  "approval.flows.tableTitle": "Configured flows",
+  "approval.detail.change.title": "What will change",
+  "approval.detail.change.field": "Setting",
+  "approval.detail.change.before": "Current value",
+  "approval.detail.change.after": "New value",
+  "approval.detail.change.notSet": "not set",
+  "approval.detail.change.showUnchanged": "Show {count} unchanged",
+  "approval.detail.change.hideUnchanged": "Hide {count} unchanged",
+  "approval.detail.change.reason": "Reason for the change",
+  "approval.detail.change.noReason": "No reason given",
+  "approval.detail.decision.ownRequest": "You submitted this request, so another user must approve it.",
+  "approval.detail.tech.show": "Show",
+  "approval.detail.tech.hide": "Hide",
+  "approval.detail.about.title": "What is being approved"
 }

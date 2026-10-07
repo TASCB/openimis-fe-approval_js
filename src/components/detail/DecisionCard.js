@@ -8,15 +8,15 @@ import { DetailCard, useAP } from './common';
 
 const useStyles = makeStyles((theme) => ({
   hint: { fontSize: 13, opacity: 0.8, marginBottom: theme.spacing(1.5) },
+  blocked: { fontSize: 13, fontWeight: 600, alignSelf: 'center' },
   foot: {
     display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: theme.spacing(1), marginTop: theme.spacing(1),
   },
 }));
 
-// The signature is recorded only with an approval.
 export default function DecisionCard({
-  comment, onComment, commentError, signature, onSignature,
-  canDecide, canReturn, canCancel, onAction, submitting,
+  comment, onComment, commentError,
+  canDecide, canReturn, canCancel, onAction, submitting, approveBlocked = false,
 }) {
   const classes = useStyles();
   const { formatMessage } = useAP();
@@ -39,16 +39,6 @@ export default function DecisionCard({
             inputProps={{ maxLength: 2000 }}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label={formatMessage('field.signature')}
-            helperText={formatMessage('field.signature.help')}
-            value={signature}
-            onChange={(e) => onSignature(e.target.value)}
-            inputProps={{ maxLength: 255 }}
-          />
-        </Grid>
       </Grid>
       <div className={classes.foot}>
         {canCancel && (
@@ -66,15 +56,21 @@ export default function DecisionCard({
             <Button color="primary" disabled={submitting} onClick={() => onAction('reject')}>
               {formatMessage('action.reject')}
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Check />}
-              disabled={submitting}
-              onClick={() => onAction('approve')}
-            >
-              {formatMessage('action.approve')}
-            </Button>
+            {approveBlocked ? (
+              <Typography color="error" className={classes.blocked}>
+                {formatMessage('detail.decision.ownRequest')}
+              </Typography>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Check />}
+                disabled={submitting}
+                onClick={() => onAction('approve')}
+              >
+                {formatMessage('action.approve')}
+              </Button>
+            )}
           </>
         )}
       </div>

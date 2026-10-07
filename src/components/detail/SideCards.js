@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Typography } from '@material-ui/core';
+import { Avatar, Button, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   DetailCard, initials, personName, useAP,
@@ -38,9 +38,11 @@ export function RequesterCard({ request }) {
   );
 }
 
+// Support detail; collapsed so it does not compete with what the approver needs.
 export function TechnicalCard({ request }) {
   const classes = useStyles();
   const { formatMessage, formatDateTimeFromISO } = useAP();
+  const [open, setOpen] = React.useState(false);
   const rows = [
     ['detail.tech.flow', request.flow?.code],
     ['detail.tech.domain', request.flow?.domain],
@@ -51,15 +53,24 @@ export function TechnicalCard({ request }) {
     ['detail.tech.completed', request.completedAt && formatDateTimeFromISO(request.completedAt)],
   ].filter(([, v]) => !!v);
   return (
-    <DetailCard title={formatMessage('detail.tech.title')}>
-      <div className={classes.tech}>
-        {rows.map(([k, v]) => (
-          <React.Fragment key={k}>
-            <Typography component="span" className={classes.techLabel}>{formatMessage(k)}</Typography>
-            <span className={classes.mono}>{v}</span>
-          </React.Fragment>
-        ))}
-      </div>
+    <DetailCard
+      title={formatMessage('detail.tech.title')}
+      action={(
+        <Button size="small" color="primary" onClick={() => setOpen(!open)}>
+          {formatMessage(open ? 'detail.tech.hide' : 'detail.tech.show')}
+        </Button>
+      )}
+    >
+      {open && (
+        <div className={classes.tech}>
+          {rows.map(([k, v]) => (
+            <React.Fragment key={k}>
+              <Typography component="span" className={classes.techLabel}>{formatMessage(k)}</Typography>
+              <span className={classes.mono}>{v}</span>
+            </React.Fragment>
+          ))}
+        </div>
+      )}
     </DetailCard>
   );
 }

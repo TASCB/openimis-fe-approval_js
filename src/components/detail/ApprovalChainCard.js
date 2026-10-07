@@ -107,7 +107,6 @@ export default function ApprovalChainCard({ request }) {
                   {' · '}
                   {personName(d.approver) || '?'}
                   {d.decidedAt ? ` · ${formatDateTimeFromISO(d.decidedAt)}` : ''}
-                  {!!d.signature && ` · ${formatMessageWithValues('detail.chain.signed', { signature: d.signature })}`}
                   {!!d.comment && <div className={classes.comment}>{d.comment}</div>}
                 </div>
               ))}
