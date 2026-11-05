@@ -52,8 +52,11 @@ function EditFlowDialog({ flow, onClose, onSave, fm }) {
   });
 
   const save = () => {
+    // Keep what the dialog doesn't edit (assigned_role_id, enforce_* switches).
     const config = {
+      ...(flow.config || {}),
       steps: steps.map((s) => ({
+        ...s,
         code: (s.code || '').trim(),
         label: (s.label || '').trim(),
         required_right: (String(s.required_right || '')).trim() || null,
