@@ -6,7 +6,7 @@ import { FormattedMessage } from '@openimis/fe-core';
 import messages_en from './translations/en.json';
 import reducer from './reducer';
 import {
-  RIGHT_REQUEST_SEARCH, RIGHT_FLOW_SEARCH,
+  RIGHT_FLOW_SEARCH,
   APPROVAL_ROUTE_REQUESTS, APPROVAL_ROUTE_REQUEST, APPROVAL_ROUTE_FLOWS,
 } from './constants';
 
@@ -37,7 +37,7 @@ const DEFAULT_CONFIG = {
       text: <FormattedMessage module="approval" id="menu.approvals" />,
       icon: <AssignmentTurnedIn />,
       route: `/${ROUTE_REQUESTS}`,
-      filter: (rights) => rights.includes(RIGHT_REQUEST_SEARCH),
+      filter: () => true,
       id: 'approval.approvals',
     },
     {

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Paper, Grid, Tab } from '@material-ui/core';
 import {
   Helmet, useTranslations, useModulesManager,
 } from '@openimis/fe-core';
-import { MODULE_NAME, RIGHT_REQUEST_SEARCH } from '../constants';
+import { MODULE_NAME } from '../constants';
 import ApprovalRequestSearcher from '../components/ApprovalRequestSearcher';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,10 +22,7 @@ function ApprovalsPage() {
   const classes = useStyles();
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
-  const rights = useSelector((s) => s.core.user.i_user.rights ?? []);
   const [tab, setTab] = useState('mine');
-
-  if (!rights.includes(RIGHT_REQUEST_SEARCH)) return null;
 
   return (
     <div className={classes.page}>
