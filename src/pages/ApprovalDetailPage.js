@@ -40,6 +40,7 @@ const CARD_KEYS = ['title', 'changes', 'details', 'reason', 'effect'];
 // Domains whose record has a detail page, so the reviewer can open what they are approving.
 const RECORD_ROUTES = {
   'access_request.accessrequest': 'access_request.route.request',
+  'training.training': 'training.route.training',
 };
 
 // Node ids arrive relay-encoded; the logged-in user's id does not.
