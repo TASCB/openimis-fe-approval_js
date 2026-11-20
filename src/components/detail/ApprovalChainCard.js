@@ -43,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
   decision: {
     marginTop: theme.spacing(1),
     padding: theme.spacing(1, 1.5),
-    borderLeft: `3px solid ${theme.palette.divider}`,
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: 4,
     fontSize: 13,
   },
   comment: { whiteSpace: 'pre-wrap', marginTop: 2 },
