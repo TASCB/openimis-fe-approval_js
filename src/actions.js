@@ -100,6 +100,6 @@ export const cancelRequest = (requestUuid, { reason } = {}, label) => runMutatio
 
 export const updateApprovalFlow = (flowUuid, config, isActive, label) => runMutation('updateApprovalFlow', `
     id: "${flowUuid}"
-    config: "${formatGQLString(JSON.stringify(config))}"
+    config: ${JSON.stringify(JSON.stringify(config))}
     ${typeof isActive === 'boolean' ? `isActive: ${isActive}` : ''}
 `, label);
